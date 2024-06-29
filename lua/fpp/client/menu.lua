@@ -60,14 +60,14 @@ function FPP.AdminMenu(Panel)
     AdminPanel.contents:Clear()
 
     if not canEditSettings then
-        AdminPanel.contents:Add(Label("You are not a superadmin\nThe changes you make will not have any effect."))
+        AdminPanel.contents:Add(Label("Вы не суперадмин\nВнесенные вами изменения не будут иметь эффекта.."))
         local AmAdmin = AdminPanel.contents:Add("DButton")
-        AmAdmin:SetText("Unlock buttons anyway")
-        AmAdmin:SetTooltip("If you're REALLY not an admin it won't work")
+        AmAdmin:SetText("Все равно разблокировать кнопки")
+        AmAdmin:SetTooltip("Если вы ДЕЙСТВИТЕЛЬНО не админ, это не сработает")
 
         function AmAdmin:DoClick()
-            AmAdmin:SetText("Buttons unlocked")
-            AmAdmin:SetTooltip("The changes you make now DO have effect unless you're really not an admin")
+            AmAdmin:SetText("Кнопки разблокированы")
+            AmAdmin:SetTooltip("Изменения, которые вы вносите сейчас, ДЕЙСТВИТЕЛЬНО будут иметь эффект, если вы на самом деле не являетесь админ")
             canEditSettings = true
         end
     end
@@ -958,10 +958,10 @@ function FPP.BuddiesMenu(Panel)
     Panel:ClearControls()
     BuddiesPanel:Clear()
 
-    Panel:AddControl("Label", {Text = "\nBuddies menu\nNote: Your buddies are saved and will work in all servers with FPP\nThe buddies list includes players that aren't here\n\nYour buddies:"})
+    Panel:AddControl("Label", {Text = "\nМеню друзей\nПримечание: Ваши друзья сохраняются и будут работать на всех серверах с FPP\nВ список друзей также входят игроки, которых нет на сервере\n\nВаши друзья:"})
     local BuddiesList = vgui.Create("DListView")
     BuddiesList:AddColumn("Steam ID")
-    BuddiesList:AddColumn("Name")
+    BuddiesList:AddColumn("Имя")
     BuddiesList:SetTall(150)
     BuddiesList:SetMultiSelect(false)
     BuddiesPanel:AddPanel(BuddiesList)
@@ -971,7 +971,7 @@ function FPP.BuddiesMenu(Panel)
     BuddiesList:SelectFirstItem()
 
     local remove = vgui.Create("DButton")
-    remove:SetText("Remove selected buddy")
+    remove:SetText("Удалить выбранного друга")
     remove.DoClick = function()
         local line = BuddiesList:GetLine(BuddiesList:GetSelectedLine()) -- Select the only selected line
         if not line then return end
@@ -981,7 +981,7 @@ function FPP.BuddiesMenu(Panel)
     BuddiesPanel:AddPanel(remove)
 
     local edit = vgui.Create("DButton")
-    edit:SetText("Edit selected buddy")
+    edit:SetText("Изменить выбранного друга")
     edit.DoClick = function()
         local line = BuddiesList:GetLine(BuddiesList:GetSelectedLine()) -- Select the only selected line
         if not line then return end
@@ -993,15 +993,15 @@ function FPP.BuddiesMenu(Panel)
     BuddiesPanel:AddPanel(edit)
 
     local AddManual = vgui.Create("DButton")
-    AddManual:SetText("Add steamID manually")
+    AddManual:SetText("Добавить SteamID вручную")
     AddManual.DoClick = function()
-        Derma_StringRequest("Add buddy manually",
-        "Please enter the SteamID of the player you want to add in your buddies list",
+        Derma_StringRequest("Добавить друга вручную",
+        "Пожалуйста, введите SteamID игрока, которого вы хотите добавить в список друзей",
         "",
         function(ID)
 
-            Derma_StringRequest("Name of buddy",
-            "What is the name of this buddy? (You can enter any name, it will change the next time you meet in a server with FPP)",
+            Derma_StringRequest("Имя друга",
+            "Как зовут этого друга? (Вы можете ввести любое имя, оно изменится при следующей встрече на сервере с FPP)",
             "",
             function(Name)
                 FPP.SetBuddyMenu(ID, Name)
@@ -1010,7 +1010,7 @@ function FPP.BuddiesMenu(Panel)
     end
     BuddiesPanel:AddPanel(AddManual)
 
-    Panel:AddControl("Label", {Text = "\nAdd buddy:"})
+    Panel:AddControl("Label", {Text = "\nДобавить друга:"})
     local AvailablePlayers = false
     for _, v in SortedPairs(player.GetAll(), function(a, b) return a:Nick() > b:Nick() end) do
         if not IsValid(v) then continue end
@@ -1034,7 +1034,7 @@ function FPP.BuddiesMenu(Panel)
         end
     end
     if not AvailablePlayers then
-        Panel:AddControl("Label", {Text = "<No players available>"})
+        Panel:AddControl("Label", {Text = "<Нет доступных игроков>"})
     end
 end
 
@@ -1072,19 +1072,19 @@ function FPP.SetBuddyMenu(SteamID, Name, data)
     end
 
     data = data or {0,0,0,0,0}
-    AddChk("Physgun", "physgun", data[1])
-    AddChk("Gravgun", "gravgun", data[2])
-    AddChk("Toolgun", "toolgun", data[3])
-    AddChk("Use", "playeruse", data[4])
-    AddChk("Entity damage", "entitydamage", data[5])
+    AddChk("Пфизган", "physgun", data[1])
+    AddChk("Гравитиган", "gravgun", data[2])
+    AddChk("Тулган", "toolgun", data[3])
+    AddChk("Взаймодействие с энтити", "playeruse", data[4])
+    AddChk("Урон по энтити", "entitydamage", data[5])
 end
 
 local PrivateSettings = {
-    ["touch my own entities"] = "OwnProps",
-    ["touch world entities"] = "WorldProps",
-    ["touch other people's entities"] = "OtherPlayerProps",
-    ["touch blocked entities"] = "BlockedProps",
-    ["see the owners of props"] = "HideOwner"
+    ["трогать свои энтити"] = "OwnProps",
+    ["трогать энтити мира"] = "WorldProps",
+    ["трогать энтити других людей"] = "OtherPlayerProps",
+    ["трогать заблокированные энтити"] = "BlockedProps",
+    ["видеть владельцев пропов"] = "HideOwner"
 }
 
 local privateSettingVars = {}
@@ -1104,10 +1104,10 @@ function FPP.PrivateSettings(Panel)
     Panel:ClearControls()
     PrivateSettingsPanel:Clear()
 
-    Panel:AddControl("Label", {Text = "\nPrivate settings menu\nUse to set settings that override server settings\n\nThese settings can only restrict you further.\n"})
+    Panel:AddControl("Label", {Text = "\nМеню личных настроек\nИспользуйте для установки настроек, которые переопределяют настройки сервера.\n\nЭти настройки могут только еще больше ограничить вас.\n"})
     for k, v in pairs(PrivateSettings) do
         local box = vgui.Create("DCheckBoxLabel")
-        box:SetText("I don't want to " .. k)
+        box:SetText("Я не хочу " .. k)
         box:SetValue(GetConVar("FPP_PrivateSettings_" .. v):GetBool())
         box:SetDark(true)
 
@@ -1120,10 +1120,10 @@ function FPP.PrivateSettings(Panel)
         box:SizeToContents()
         Panel:AddItem(box)
     end
-    Panel:AddControl("CheckBox", {Label = "I want to pick up players", Command = "cl_pickupplayers"})
+    Panel:AddControl("CheckBox", {Label = "Я хочу поднимать игроков", Command = "cl_pickupplayers"})
 
-    local fallbackChoice = Panel:ComboBox("Fallback player")
-    fallbackChoice:AddChoice("None", -1, true)
+    local fallbackChoice = Panel:ComboBox("Резерв. владелец")
+    fallbackChoice:AddChoice("Никто", -1, true)
 
     for _, v in ipairs(player.GetAll()) do
         if v == LocalPlayer() then continue end
@@ -1137,9 +1137,9 @@ function FPP.PrivateSettings(Panel)
 end
 
 local function makeMenus()
-    spawnmenu.AddToolMenuOption( "Utilities", "Falco's prop protection", "Falco's prop protection admin settings", "Admin settings", "", "", FPP.AdminMenu)
-    spawnmenu.AddToolMenuOption( "Utilities", "Falco's prop protection", "Falco's prop protection buddies", "Buddies", "", "", FPP.BuddiesMenu)
-    spawnmenu.AddToolMenuOption( "Utilities", "Falco's prop protection", "Falco's prop protection Private settings", "Private Settings", "", "", FPP.PrivateSettings)
+    spawnmenu.AddToolMenuOption( "Utilities", "Falco's prop protection", "Falco's prop protection admin settings", "Серверные настройки", "", "", FPP.AdminMenu)
+    spawnmenu.AddToolMenuOption( "Utilities", "Falco's prop protection", "Falco's prop protection buddies", "Доступ к пропам", "", "", FPP.BuddiesMenu)
+    spawnmenu.AddToolMenuOption( "Utilities", "Falco's prop protection", "Falco's prop protection Private settings", "Личные настройки", "", "", FPP.PrivateSettings)
 end
 hook.Add("PopulateToolMenu", "FPPMenus", makeMenus)
 
@@ -1235,7 +1235,7 @@ usermessage.Hook("FPP_ShareSettings", FPP.SharedMenu)
 
 properties.Add("addFPPBlocked",
 {
-    MenuLabel   =   "Add to FPP blocked models",
+    MenuLabel   =   "Добавить в блек-лист моделей",
     Order       =   2001,
     MenuIcon    =   "icon16/cross.png",
 
@@ -1252,7 +1252,7 @@ properties.Add("addFPPBlocked",
 
 properties.Add("removeFPPBlocked",
 {
-    MenuLabel   =   "Remove from FPP blocked models",
+    MenuLabel   =   "Удалить из блек-листа моделей",
     Order       =   2002,
     MenuIcon    =   "icon16/tick.png",
 
