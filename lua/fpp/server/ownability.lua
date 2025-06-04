@@ -338,7 +338,7 @@ end
 --[[-------------------------------------------------------------------------
 Events that trigger recalculation
 ---------------------------------------------------------------------------]]
-local function handleConstraintCreation(ent)
+local function handleConstraintCreation(ent, players)
     local ent1, ent2 = ent:GetConstrainedEntities()
     ent1, ent2 = ent1 or ent.Ent1, ent2 or ent.Ent2
 
@@ -350,7 +350,7 @@ local function handleConstraintCreation(ent)
         i = i + 1
     end
 
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in ipairs(players) do
         local touch1, touch2 = FPP.plyCanTouchEnt(ply, ent1), FPP.plyCanTouchEnt(ply, ent2)
 
         -- The constrained entities have the same touching rights.
@@ -379,15 +379,18 @@ end
 --[[-------------------------------------------------------------------------
 On entity created
 ---------------------------------------------------------------------------]]
-local function onEntitiesCreated(ents)
+local entQueue = {}
+
+local function onEntitiesCreated(entities)
     -- Table from player to list of entities that need to be networked
+    local players = player.GetAll()
     local sendToPlayers = {}
 
-    for _, ent in pairs(ents) do
-        if not IsValid(ent) then continue end
+    for _, ent in ipairs(entities) do
+        if not ent:IsValid() then continue end
 
         if isConstraint(ent) then
-            handleConstraintCreation(ent)
+            handleConstraintCreation(ent, players)
             continue
         end
 
@@ -398,7 +401,7 @@ local function onEntitiesCreated(ents)
 
         if blockedEnts[ent:GetClass()] then continue end
 
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in ipairs(players) do
             local changed = FPP.calculateCanTouch(ply, ent)
             -- Only send data that has been changed
             if not changed then continue end
@@ -414,17 +417,15 @@ end
 
 -- Make a queue of entities created per frame, so the server will send out a maximum-
 -- of one message per player per frame
-local entQueue = {}
-local timerFunc = function()
-    onEntitiesCreated(entQueue)
-    entQueue = {}
-    timer.Remove("FPP_OnEntityCreatedTimer")
-end
 hook.Add("OnEntityCreated", "FPP_EntityCreated", function(ent)
     table.insert(entQueue, ent)
 
-    if timer.Exists("FPP_OnEntityCreatedTimer") then return end
-    timer.Create("FPP_OnEntityCreatedTimer", 0, 1, timerFunc)
+    if not timer.Exists("FPP_OnEntityCreatedTimer") then
+        timer.Create("FPP_OnEntityCreatedTimer", 0, 1, function()
+            onEntitiesCreated(entQueue)
+            entQueue = {}
+        end)
+    end
 end)
 
 --[[-------------------------------------------------------------------------
